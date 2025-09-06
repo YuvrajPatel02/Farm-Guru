@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Vite & HeroUI Template
 
 This is a template for creating applications using Vite and HeroUI (v2).
@@ -48,3 +49,7 @@ After modifying the `.npmrc` file, you need to run `pnpm install` again to ensur
 ## License
 
 Licensed under the [MIT license](https://github.com/frontio-ai/vite-template/blob/main/LICENSE).
+=======
+# Farm-Guru
+Farm Guru is a Kerala-focused platform designed to support farmers by providing professional guidance and resources. Farmers can log in, submit their queries, and receive answers from agricultural experts, helping them make informed decisions.
+>>>>>>> f757c5c52ad329022c969cb4b42ca886bdb2c6ac

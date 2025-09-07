@@ -1,22 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "../firebaseConfig";
 
 export default function Register() {
   const [fullName, setFullName] = useState("");
-  const [userId, setUserId] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-
   const navigate = useNavigate();
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-  
-    if (!fullName || !userId || !email || !phone || !password || !confirmPassword) {
+    if (!fullName || !email || !password || !confirmPassword) {
       setError("All fields are required");
       return;
     }
@@ -26,18 +24,15 @@ export default function Register() {
       return;
     }
 
-    const existingUser = localStorage.getItem(userId);
-    if (existingUser) {
-      setError("User ID already exists. Choose another one.");
-      return;
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName: fullName });
+      setError("");
+      alert("Registration successful! Please login.");
+      navigate("/");
+    } catch (err: any) {
+      setError(err.message);
     }
-
-    const user = { fullName, userId, email, phone, password };
-    localStorage.setItem(userId, JSON.stringify(user));
-
-    setError("");
-    alert("Registration successful! Please login.");
-    navigate("/");
   };
 
   return (
@@ -60,15 +55,6 @@ export default function Register() {
             onChange={(e) => setFullName(e.target.value)}
             className="px-4 py-3 border-2 border-green-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-green-400 text-green-900"
           />
-
-          <input
-            type="text"
-            placeholder="User ID"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            className="px-4 py-3 border-2 border-green-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-green-400 text-green-900"
-          />
-
           <input
             type="email"
             placeholder="Email"
@@ -76,15 +62,6 @@ export default function Register() {
             onChange={(e) => setEmail(e.target.value)}
             className="px-4 py-3 border-2 border-green-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-green-400 text-green-900"
           />
-
-          <input
-            type="tel"
-            placeholder="Phone Number"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="px-4 py-3 border-2 border-green-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-green-400 text-green-900"
-          />
-
           <input
             type="password"
             placeholder="Password"
@@ -92,7 +69,6 @@ export default function Register() {
             onChange={(e) => setPassword(e.target.value)}
             className="px-4 py-3 border-2 border-green-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-green-400 text-green-900"
           />
-
           <input
             type="password"
             placeholder="Confirm Password"

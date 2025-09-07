@@ -1,28 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebaseConfig";
 
 export default function Login() {
-  const [userId, setUserId] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const storedUser = localStorage.getItem(userId);
-
-    if (!storedUser) {
-      setError("User ID does not exist");
-      return;
-    }
-
-    const user = JSON.parse(storedUser);
-    if (user.password === password) {
-      localStorage.setItem("loggedInUser", userId); 
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
       navigate("/home");
-    } else {
-      setError("Invalid password");
+    } catch {
+      setError("Invalid email or password");
     }
   };
 
@@ -39,10 +32,10 @@ export default function Login() {
         {error && <p className="text-red-500 text-center font-medium">{error}</p>}
 
         <input
-          type="text"
-          placeholder="User ID"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="px-5 py-3 border-2 border-green-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 placeholder-green-400 text-green-900"
         />
 

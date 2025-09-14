@@ -25,10 +25,14 @@ export default function Register() {
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       await updateProfile(userCredential.user, { displayName: fullName });
       setError("");
-      alert("Registration successful! Please login.");
+      alert("Registration successful!");
       navigate("/");
     } catch (err: any) {
       setError(err.message);
@@ -45,7 +49,9 @@ export default function Register() {
           🌾 Register
         </h1>
 
-        {error && <p className="text-red-500 text-center font-medium">{error}</p>}
+        {error && (
+          <p className="text-red-500 text-center font-medium">{error}</p>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input

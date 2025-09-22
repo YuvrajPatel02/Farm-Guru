@@ -27,7 +27,7 @@ export default function AskExperts() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const [recentQueries, setRecentQueries] = useState<any[]>([]);
+  const [_recentQueries, setRecentQueries] = useState<any[]>([]);
 
   useEffect(() => {
     if (!userId) return setRecentQueries([]);

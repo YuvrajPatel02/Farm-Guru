@@ -59,7 +59,7 @@ export default function MandiLive({
       // Remove any previous translation attributes
       containerRef.current.removeAttribute("translate");
       containerRef.current.lang = lang;
-      
+
       // For Malayalam, we'll rely on browser translation if available
       if (lang === "ml") {
         containerRef.current.setAttribute("translate", "yes");
@@ -77,11 +77,11 @@ export default function MandiLive({
     // Simple translation mapping for UI elements only
     const translations: Record<string, Record<string, string>> = {
       en: {
-        "title": "📊 Live Mandi Prices",
-        "searchPlaceholder": "Search crops, markets...",
-        "fetching": "Fetching...",
-        "error": "Error",
-        "itemsInfo": `Showing ${params?.shown} of ${params?.total} items`,
+        title: "📊 Live Mandi Prices",
+        searchPlaceholder: "Search crops, markets...",
+        fetching: "Fetching...",
+        error: "Error",
+        itemsInfo: `Showing ${params?.shown} of ${params?.total} items`,
         "filters.state": "State",
         "filters.district": "District",
         "filters.market": "Market",
@@ -94,8 +94,8 @@ export default function MandiLive({
         "pagination.previous": "Previous",
         "pagination.next": "Next",
         "pagination.pageInfo": `Page ${params?.current} of ${params?.total}`,
-        "noData": "No price data available. Try adjusting your filters.",
-        "failedLoad": "Failed to load prices:",
+        noData: "No price data available. Try adjusting your filters.",
+        failedLoad: "Failed to load prices:",
         "tableHeaders.commodity": "Commodity",
         "tableHeaders.variety": "Variety",
         "tableHeaders.grade": "Grade",
@@ -104,14 +104,14 @@ export default function MandiLive({
         "tableHeaders.district": "District",
         "tableHeaders.state": "State",
         "tableHeaders.arrivalDate": "Arrival Date",
-        "dataSource": "Data sourced from Government of India",
+        dataSource: "Data sourced from Government of India",
       },
       ml: {
-        "title": "📊 ലൈവ് മണ്ടി വിലകൾ",
-        "searchPlaceholder": "പച്ചക്കറികൾ, മാർക്കറ്റുകൾ തിരയുക...",
-        "fetching": "ഡാറ്റ എടുക്കുന്നു...",
-        "error": "പിശക്",
-        "itemsInfo": `${params?.shown} / ${params?.total} ഇനം`,
+        title: "📊 ലൈവ് മണ്ടി വിലകൾ",
+        searchPlaceholder: "പച്ചക്കറികൾ, മാർക്കറ്റുകൾ തിരയുക...",
+        fetching: "ഡാറ്റ എടുക്കുന്നു...",
+        error: "പിശക്",
+        itemsInfo: `${params?.shown} / ${params?.total} ഇനം`,
         "filters.state": "സംസ്ഥാനം",
         "filters.district": "ജില്ല",
         "filters.market": "മാർക്കറ്റ്",
@@ -124,8 +124,8 @@ export default function MandiLive({
         "pagination.previous": "മുമ്പത്തെ",
         "pagination.next": "അടുത്തത്",
         "pagination.pageInfo": `പേജ് ${params?.current} / ${params?.total}`,
-        "noData": "വില ഡാറ്റ ലഭ്യമല്ല. ദയവായി ഫിൽട്ടറുകൾ മാറ്റി നോക്കുക.",
-        "failedLoad": "വിലകൾ ലോഡ് ചെയ്യാൻ പരാജയപ്പെട്ടു:",
+        noData: "വില ഡാറ്റ ലഭ്യമല്ല. ദയവായി ഫിൽട്ടറുകൾ മാറ്റി നോക്കുക.",
+        failedLoad: "വിലകൾ ലോഡ് ചെയ്യാൻ പരാജയപ്പെട്ടു:",
         "tableHeaders.commodity": "വസ്തു",
         "tableHeaders.variety": "വിവിധതരം",
         "tableHeaders.grade": "ഗ്രേഡ്",
@@ -134,8 +134,8 @@ export default function MandiLive({
         "tableHeaders.district": "ജില്ല",
         "tableHeaders.state": "സംസ്ഥാനം",
         "tableHeaders.arrivalDate": "വരവിന്റെ തീയതി",
-        "dataSource": "ഡാറ്റ ഇന്ത്യ സർക്കാർ നൽകുന്നു",
-      }
+        dataSource: "ഡാറ്റ ഇന്ത്യ സർക്കാർ നൽകുന്നു",
+      },
     };
 
     return translations[language][key] || translations.en[key] || key;
@@ -313,7 +313,10 @@ export default function MandiLive({
                 ? t("fetching")
                 : error
                   ? t("error")
-                  : t("itemsInfo", { shown: filteredPrices.length, total: totalRecords })}
+                  : t("itemsInfo", {
+                      shown: filteredPrices.length,
+                      total: totalRecords,
+                    })}
             </div>
           </div>
         </div>
@@ -334,7 +337,9 @@ export default function MandiLive({
                 className="w-full p-2 border rounded-md"
                 value={filters[key]}
                 onChange={(e) => handleFilterChange(key, e.target.value)}
-                placeholder={t("filters.filterPlaceholder", { field: t(`filters.${key}`) })}
+                placeholder={t("filters.filterPlaceholder", {
+                  field: t(`filters.${key}`),
+                })}
                 aria-label={`${t(`filters.${key}`)} filter`}
               />
             </div>
@@ -376,7 +381,10 @@ export default function MandiLive({
               {t("pagination.previous")}
             </button>
             <span className="text-sm" aria-live="polite">
-              {t("pagination.pageInfo", { current: currentPage, total: totalPages })}
+              {t("pagination.pageInfo", {
+                current: currentPage,
+                total: totalPages,
+              })}
             </span>
             <button
               onClick={handleNextPage}

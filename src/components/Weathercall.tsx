@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface WeatherData {
   temperature: number;
@@ -39,18 +39,25 @@ export default function WeatherLive() {
   };
 
   const convertTemp = (temp: number): number => {
-    return unit === "fahrenheit" ? Math.round(temp * 9 / 5 + 32) : temp;
+    return unit === "fahrenheit" ? Math.round((temp * 9) / 5 + 32) : temp;
   };
 
   const getWeatherIcon = (condition: string) => {
     switch (condition.toLowerCase()) {
-      case "sunny": return "☀️";
-      case "partly cloudy": return "⛅";
-      case "cloudy": return "☁️";
-      case "rainy": return "🌧️";
-      case "snowy": return "❄️";
-      case "stormy": return "⛈️";
-      default: return "🌤️";
+      case "sunny":
+        return "☀️";
+      case "partly cloudy":
+        return "⛅";
+      case "cloudy":
+        return "☁️";
+      case "rainy":
+        return "🌧️";
+      case "snowy":
+        return "❄️";
+      case "stormy":
+        return "⛈️";
+      default:
+        return "🌤️";
     }
   };
 
@@ -142,7 +149,9 @@ export default function WeatherLive() {
     <div className="max-w-6xl mx-auto p-4">
       <div className="p-6 rounded-lg shadow-lg bg-gradient-to-br from-blue-50 to-cyan-50">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-blue-800">🌤️ Live Weather Information</h2>
+          <h2 className="text-2xl font-bold text-blue-800">
+            🌤️ Live Weather Information
+          </h2>
           <button
             onClick={toggleUnit}
             className="px-3 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
@@ -158,38 +167,60 @@ export default function WeatherLive() {
           <>
             <div className="bg-white rounded-xl shadow-md p-6 mb-6">
               <div className="flex items-center justify-between">
-                <div className="text-4xl">{getWeatherIcon(weather.condition)}</div>
+                <div className="text-4xl">
+                  {getWeatherIcon(weather.condition)}
+                </div>
                 <div className="text-3xl font-bold">
-                  {convertTemp(weather.temperature)}°{unit === "celsius" ? "C" : "F"}
+                  {convertTemp(weather.temperature)}°
+                  {unit === "celsius" ? "C" : "F"}
                 </div>
                 <div className="text-gray-600">{weather.condition}</div>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-100">
                 <div className="text-center">
                   <div className="text-gray-500">Wind</div>
-                  <div className="text-xl font-semibold">{weather.windSpeed} km/h</div>
+                  <div className="text-xl font-semibold">
+                    {weather.windSpeed} km/h
+                  </div>
                 </div>
                 <div className="text-center">
                   <div className="text-gray-500">Chance of Rain</div>
-                  <div className="text-xl font-semibold">{weather.forecast[0].chanceOfRain} mm</div>
+                  <div className="text-xl font-semibold">
+                    {weather.forecast[0].chanceOfRain} mm
+                  </div>
                 </div>
               </div>
             </div>
 
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">5-Day Forecast</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              5-Day Forecast
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
               {weather.forecast.map((day, idx) => (
-                <div key={idx} className="bg-white rounded-xl shadow-md p-4 text-center">
+                <div
+                  key={idx}
+                  className="bg-white rounded-xl shadow-md p-4 text-center"
+                >
                   <div className="text-lg font-semibold text-gray-700">
-                    {new Date(day.date).toLocaleDateString("en-US", { weekday: "short" })}
+                    {new Date(day.date).toLocaleDateString("en-US", {
+                      weekday: "short",
+                    })}
                   </div>
-                  <div className="text-3xl my-2">{getWeatherIcon(day.condition)}</div>
-                  <div className="text-gray-700 text-sm mb-1">{day.condition}</div>
+                  <div className="text-3xl my-2">
+                    {getWeatherIcon(day.condition)}
+                  </div>
+                  <div className="text-gray-700 text-sm mb-1">
+                    {day.condition}
+                  </div>
                   <div className="flex justify-center space-x-2">
                     <div className="font-bold">{convertTemp(day.maxTemp)}°</div>
-                    <div className="text-gray-500">{convertTemp(day.minTemp)}°</div>
+                    <div className="text-gray-500">
+                      {convertTemp(day.minTemp)}°
+                    </div>
                   </div>
-                  <div className="text-sm text-blue-500 mt-1">Rain: {day.chanceOfRain} mm</div>
+                  <div className="text-sm text-blue-500 mt-1">
+                    Rain: {day.chanceOfRain} mm
+                  </div>
                 </div>
               ))}
             </div>

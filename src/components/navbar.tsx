@@ -1,15 +1,14 @@
+// components/Navbar.tsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 
-// Define types for the props
 interface NavbarProps {
   language: "en" | "ml";
   setLanguage: (language: "en" | "ml") => void;
 }
 
-// Define translations for navbar items
 const navbarTranslations = {
   en: {
     aiChat: "AI Chat",
@@ -18,6 +17,7 @@ const navbarTranslations = {
     experts: "Experts",
     home: "Home",
     dashboard: "Dashboard",
+    cropReco: "Crop Recommendation",
     logout: "Logout",
     switchToMalayalam: "മലയാളം",
   },
@@ -28,6 +28,7 @@ const navbarTranslations = {
     experts: "വിദഗ്ധർ",
     home: "ഹോം",
     dashboard: "ഡാഷ്ബോർഡ്",
+    cropReco: "കൃഷി ശുപാർശ",
     logout: "ലോഗൗട്ട്",
     switchToMalayalam: "English",
   },
@@ -48,85 +49,47 @@ export default function Navbar({ language, setLanguage }: NavbarProps) {
   };
 
   const toggleLanguage = () => {
-    setLanguage(language === "en" ? "ml" : "en");
+    const newLanguage = language === "en" ? "ml" : "en";
+    setLanguage(newLanguage);
+    // Optional: Persist to localStorage for cross-session memory
+    localStorage.setItem('preferredLanguage', newLanguage);
   };
 
   return (
     <nav className="bg-green-900 text-white shadow-md">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <Link to="/dashboard" className="text-2xl font-bold tracking-wide">
+        <Link to="/home" className="text-2xl font-bold tracking-wide">
           🌾 KarshakaMithram
         </Link>
 
         <div className="hidden md:flex gap-6 items-center">
-          <Link to="/ai" className="hover:text-yellow-300 transition">
-            {t.aiChat}
-          </Link>
-          <Link to="/mandi" className="hover:text-yellow-300 transition">
-            {t.mandiPrices}
-          </Link>
-          <Link to="/weather" className="hover:text-yellow-300 transition">
-            {t.weather}
-          </Link>
-          <Link to="/ask" className="hover:text-yellow-300 transition">
-            {t.experts}
-          </Link>
-          <Link to="/" className="hover:text-yellow-300 transition">
-            {t.home}
-          </Link>
-          
-          {/* Language toggle button */}
-          <button
-            onClick={toggleLanguage}
-            className="text-sm bg-green-700 hover:bg-green-600 px-3 py-1 rounded-md transition"
-          >
+          <Link to="/ai">{t.aiChat}</Link>
+          <Link to="/mandi">{t.mandiPrices}</Link>
+          <Link to="/weather">{t.weather}</Link>
+          <Link to="/ask">{t.experts}</Link>
+          <Link to="/reco">{t.cropReco}</Link>
+          <Link to="/home">{t.home}</Link>
+
+          <button onClick={toggleLanguage} className="bg-green-700 px-3 py-1 rounded hover:bg-green-600 transition-colors">
             {t.switchToMalayalam}
           </button>
-        </div>
 
-        <div className="hidden md:flex items-center gap-4">
-          <button
-            onClick={handleLogout}
-            className="bg-yellow-400 text-green-900 font-semibold px-4 py-2 rounded-lg hover:bg-yellow-300 transition"
-          >
+          <button onClick={handleLogout} className="bg-yellow-400 text-green-900 px-4 py-2 rounded hover:bg-yellow-300 transition-colors">
             {t.logout}
           </button>
         </div>
 
+        {/* Mobile menu */}
         <div className="md:hidden flex items-center gap-3">
-          {/* Language toggle button for mobile (visible when menu is closed) */}
-          <button
-            onClick={toggleLanguage}
-            className="text-sm bg-green-700 hover:bg-green-600 px-3 py-1 rounded-md transition"
-          >
+          <button onClick={toggleLanguage} className="bg-green-700 px-3 py-1 rounded hover:bg-green-600 transition-colors">
             {t.switchToMalayalam}
           </button>
-          
-          <button
-            className="focus:outline-none"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <svg
-              className="w-7 h-7"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+          <button onClick={() => setIsOpen(!isOpen)}>
+            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {isOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               )}
             </svg>
           </button>
@@ -135,37 +98,17 @@ export default function Navbar({ language, setLanguage }: NavbarProps) {
 
       {isOpen && (
         <div className="md:hidden bg-green-800 px-4 py-3 space-y-3">
-          <Link to="/dashboard" className="block hover:text-yellow-300">
-            {t.dashboard}
-          </Link>
-          <Link to="/ai" className="block hover:text-yellow-300">
-            {t.aiChat}
-          </Link>
-          <Link to="/mandi" className="block hover:text-yellow-300">
-            {t.mandiPrices}
-          </Link>
-          <Link to="/weather" className="block hover:text-yellow-300">
-            {t.weather}
-          </Link>
-          <Link to="/ask" className="hover:text-yellow-300 transition">
-            {t.experts}
-          </Link>
-          <Link to="/" className="block hover:text-yellow-300">
-            {t.home}
-          </Link>
-          
-          {/* Language toggle in mobile menu */}
-          <button
-            onClick={toggleLanguage}
-            className="block text-sm bg-green-700 hover:bg-green-600 px-3 py-1 rounded-md transition w-full text-left"
-          >
+          <Link to="/home" className="block py-2">{t.home}</Link>
+          <Link to="/ai" className="block py-2">{t.aiChat}</Link>
+          <Link to="/mandi" className="block py-2">{t.mandiPrices}</Link>
+          <Link to="/weather" className="block py-2">{t.weather}</Link>
+          <Link to="/ask" className="block py-2">{t.experts}</Link>
+          <Link to="/reco" className="block py-2">{t.cropReco}</Link>
+
+          <button onClick={toggleLanguage} className="block bg-green-700 px-3 py-2 rounded w-full text-left hover:bg-green-600 transition-colors">
             {t.switchToMalayalam}
           </button>
-          
-          <button
-            onClick={handleLogout}
-            className="block bg-yellow-400 text-green-900 font-semibold px-4 py-2 rounded-lg hover:bg-yellow-300 transition w-full text-left"
-          >
+          <button onClick={handleLogout} className="block bg-yellow-400 text-green-900 px-4 py-2 rounded w-full text-left hover:bg-yellow-300 transition-colors">
             {t.logout}
           </button>
         </div>

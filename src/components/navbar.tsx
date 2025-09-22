@@ -20,28 +20,26 @@ export default function Navbar() {
     <nav className="bg-green-900 text-white shadow-md">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link to="/dashboard" className="text-2xl font-bold tracking-wide">
-          🌾 Farm Guru
+          🌾 KarshakaMithram
         </Link>
 
         <div className="hidden md:flex gap-6">
-          <Link to="/dashboard" className="hover:text-yellow-300 transition">
-            Dashboard
-          </Link>
           <Link to="/" className="hover:text-yellow-300 transition">
             AI Chat
           </Link>
-          <Link to="/" className="hover:text-yellow-300 transition">
+          <Link to="/mandi" className="hover:text-yellow-300 transition">
             Mandi Prices
           </Link>
-          <Link to="/" className="hover:text-yellow-300 transition">
+          <Link to="/weather" className="hover:text-yellow-300 transition">
             Weather
-          </Link>
-          <Link to="/" className="hover:text-yellow-300 transition">
-            Profile
           </Link>
           <Link to="/ask" className="hover:text-yellow-300 transition">
             Experts
           </Link>
+          <Link to="/" className="hover:text-yellow-300 transition">
+            Home
+          </Link>
+          
         </div>
 
         <div className="hidden md:block">

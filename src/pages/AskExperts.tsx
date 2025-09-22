@@ -101,14 +101,10 @@ export default function AskExperts() {
 
   return (
     <div className="min-h-screen bg-green-600">
-      <Navbar />
+      {/* Pass language and setLanguage as props to Navbar */}
+      <Navbar language={language} setLanguage={setLanguage} />
+      
       <div className="flex flex-col items-center px-4 py-10 max-w-5xl mx-auto">
-        {/* Language toggle */}
-        <div className="mb-6 flex justify-end space-x-4">
-          <button onClick={() => setLanguage("en")} className={`px-4 py-2 rounded ${language === "en" ? "bg-green-800 text-white" : "bg-green-200 text-green-800"}`}>English</button>
-          <button onClick={() => setLanguage("ml")} className={`px-4 py-2 rounded ${language === "ml" ? "bg-green-800 text-white" : "bg-green-200 text-green-800"}`}>മലയാളം</button>
-        </div>
-
         <form onSubmit={handleSubmit} className="bg-green-50 rounded-2xl shadow-2xl px-10 py-10 w-full max-w-3xl flex flex-col space-y-5 border-2 border-green-200">
           <h1 className="text-3xl font-extrabold text-center text-green-800 mb-4 drop-shadow-md">{t.askExperts}</h1>
           {error && <p className="text-red-500 text-center font-medium">{error}</p>}

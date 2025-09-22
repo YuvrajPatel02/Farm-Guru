@@ -9,6 +9,7 @@ import Register from "./pages/Register";
 import AskExperts from "./pages/AskExperts";
 import Mandi from "./pages/Mandi";
 import WeatherPage from "./pages/Weather";
+import { AiPage } from "./pages/AiPage";
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
@@ -29,6 +30,7 @@ export default function App() {
       <Route path="/" element={user ? <Navigate to="/home" /> : <Login />} />
       <Route path="/home" element={user ? <Index /> : <Navigate to="/" />} />
       <Route path="/register" element={user ? <Navigate to="/home" /> : <Register />} />
+      <Route path="/ai" element={user ? <AiPage /> : <Navigate to="/" />} />
       <Route path="/ask" element={user ? <AskExperts /> : <Navigate to="/" />} />
       <Route path="/mandi" element={user ? <Mandi /> : <Navigate to="/" />} />
       <Route path="/weather" element={user ? <WeatherPage/> : <Navigate to="/" />} />

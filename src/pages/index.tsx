@@ -97,7 +97,7 @@ export default function Index() {
 
   return (
     <div className="flex flex-col min-h-screen font-sans relative">
-      <Navbar />
+      <Navbar language={language} setLanguage={setLanguage} />
 
       <section className="h-screen flex flex-col items-center justify-center bg-gradient-to-b from-green-700 via-green-600 to-yellow-400 text-white text-center px-6">
         <h1 className="text-5xl md:text-6xl font-extrabold mb-6 drop-shadow-lg">

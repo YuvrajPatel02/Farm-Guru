@@ -23,11 +23,12 @@ function Mandi() {
 
   return (
     <>
-      {/* Pass language and setLanguage as props to Navbar */}
+      {/* Navbar with language toggle */}
       <Navbar language={language} setLanguage={setLanguage} />
 
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-cyan-50 py-8">
         <div className="container mx-auto px-4">
+          {/* Page Header */}
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-green-800 mb-4">
               {t.title}
@@ -35,10 +36,11 @@ function Mandi() {
             <p className="text-gray-600 max-w-2xl mx-auto">{t.description}</p>
           </div>
 
+          {/* MandiLive Component */}
           <MandiLive
-            apiKey="579b464db66ec23bdd00000128aa160d8d7949195f3d7bfcc860917f"
+            apiKey="579b464db66ec23bdd00000123283405d9f249db7fadfb7aef357f18"
             refreshInterval={5 * 60 * 1000}
-            language={language} // Pass the language state
+            language={language}
           />
         </div>
       </div>

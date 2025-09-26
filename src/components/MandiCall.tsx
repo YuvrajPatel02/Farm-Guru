@@ -19,8 +19,11 @@ interface MandiLiveProps {
   language: "en" | "ml";
 }
 
+const DEFAULT_API_KEY =
+  "579b464db66ec23bdd00000123283405d9f249db7fadfb7aef357f18";
+
 export default function MandiLive({
-  apiKey = "579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b",
+  apiKey = DEFAULT_API_KEY,
   refreshInterval = 5 * 60 * 1000,
   language = "en",
 }: MandiLiveProps) {
@@ -53,28 +56,21 @@ export default function MandiLive({
     };
   }, []);
 
-  // Simple translation function using browser's built-in capabilities
   const translateContent = (lang: "en" | "ml") => {
     if (containerRef.current) {
-      // Remove any previous translation attributes
       containerRef.current.removeAttribute("translate");
       containerRef.current.lang = lang;
-
-      // For Malayalam, we'll rely on browser translation if available
       if (lang === "ml") {
         containerRef.current.setAttribute("translate", "yes");
       }
     }
   };
 
-  // Update translation when language changes
   useEffect(() => {
     translateContent(language);
   }, [language]);
 
-  // Simple translation function for UI elements
   const t = (key: string, params?: Record<string, string | number>): string => {
-    // Simple translation mapping for UI elements only
     const translations: Record<string, Record<string, string>> = {
       en: {
         title: "📊 Live Mandi Prices",
@@ -141,48 +137,30 @@ export default function MandiLive({
     return translations[language][key] || translations.en[key] || key;
   };
 
-  // Sorting function
   const sortedPrices = React.useMemo(() => {
     let sortableItems = [...prices];
-    if (sortConfig !== null) {
+    if (sortConfig) {
       sortableItems.sort((a, b) => {
-        if (sortConfig.key.includes("price")) {
-          const aPrice = parseInt(
-            (a[sortConfig.key as keyof MandiPrice] as string) || "0"
-          );
-          const bPrice = parseInt(
-            (b[sortConfig.key as keyof MandiPrice] as string) || "0"
-          );
-
-          if (aPrice < bPrice) {
-            return sortConfig.direction === "ascending" ? -1 : 1;
-          }
-          if (aPrice > bPrice) {
-            return sortConfig.direction === "ascending" ? 1 : -1;
-          }
-          return 0;
-        } else {
-          const aValue = (
-            (a[sortConfig.key as keyof MandiPrice] as string) || ""
-          ).toLowerCase();
-          const bValue = (
-            (b[sortConfig.key as keyof MandiPrice] as string) || ""
-          ).toLowerCase();
-
-          if (aValue < bValue) {
-            return sortConfig.direction === "ascending" ? -1 : 1;
-          }
-          if (aValue > bValue) {
-            return sortConfig.direction === "ascending" ? 1 : -1;
-          }
-          return 0;
+        const key = sortConfig.key as keyof MandiPrice;
+        if (key.includes("price")) {
+          const aPrice = parseInt(a[key] || "0");
+          const bPrice = parseInt(b[key] || "0");
+          return sortConfig.direction === "ascending"
+            ? aPrice - bPrice
+            : bPrice - aPrice;
         }
+        const aValue = (a[key] || "").toLowerCase();
+        const bValue = (b[key] || "").toLowerCase();
+        if (aValue < bValue)
+          return sortConfig.direction === "ascending" ? -1 : 1;
+        if (aValue > bValue)
+          return sortConfig.direction === "ascending" ? 1 : -1;
+        return 0;
       });
     }
     return sortableItems;
   }, [prices, sortConfig]);
 
-  // Filter by search term
   const filteredPrices = sortedPrices.filter(
     (item) =>
       item.commodity.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -193,11 +171,7 @@ export default function MandiLive({
 
   const requestSort = (key: string) => {
     let direction = "ascending";
-    if (
-      sortConfig &&
-      sortConfig.key === key &&
-      sortConfig.direction === "ascending"
-    ) {
+    if (sortConfig?.key === key && sortConfig.direction === "ascending") {
       direction = "descending";
     }
     setSortConfig({ key, direction });
@@ -215,23 +189,16 @@ export default function MandiLive({
         offset: offset.toString(),
       });
 
-      if (filters.state) params.append("filters[state.keyword]", filters.state);
-      if (filters.district)
-        params.append("filters[district]", filters.district);
-      if (filters.market) params.append("filters[market]", filters.market);
-      if (filters.commodity)
-        params.append("filters[commodity]", filters.commodity);
-      if (filters.variety) params.append("filters[variety]", filters.variety);
-      if (filters.grade) params.append("filters[grade]", filters.grade);
+      Object.entries(filters).forEach(([k, v]) => {
+        if (v) params.append(`filters[${k}]`, v);
+      });
 
       const res = await fetch(
         `https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070?${params}`
       );
-      if (!res.ok) {
-        throw new Error(`API returned status ${res.status}`);
-      }
-      const data = await res.json();
 
+      if (!res.ok) throw new Error(`API returned status ${res.status}`);
+      const data = await res.json();
       const records = data.records || [];
       setTotalRecords(data.total || records.length);
 
@@ -249,14 +216,9 @@ export default function MandiLive({
   };
 
   useEffect(() => {
-    let timerId: NodeJS.Timeout | null = null;
-
+    const timerId = setInterval(fetchPrices, refreshInterval);
     fetchPrices();
-    timerId = setInterval(fetchPrices, refreshInterval);
-
-    return () => {
-      if (timerId) clearInterval(timerId);
-    };
+    return () => clearInterval(timerId);
   }, [apiKey, refreshInterval, limit, offset, filters]);
 
   const handleFilterChange = (key: string, value: string) => {
@@ -264,17 +226,9 @@ export default function MandiLive({
     setOffset(0);
   };
 
-  const handlePrevPage = () => {
-    if (offset >= limit) {
-      setOffset(offset - limit);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (offset + limit < totalRecords) {
-      setOffset(offset + limit);
-    }
-  };
+  const handlePrevPage = () => offset >= limit && setOffset(offset - limit);
+  const handleNextPage = () =>
+    offset + limit < totalRecords && setOffset(offset + limit);
 
   const currentPage = Math.floor(offset / limit) + 1;
   const totalPages = Math.ceil(totalRecords / limit);
@@ -321,7 +275,7 @@ export default function MandiLive({
           </div>
         </div>
 
-        {/* Filter Controls */}
+        {/* Filters */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
           {(Object.keys(filters) as (keyof typeof filters)[]).map((key) => (
             <div key={key}>
@@ -346,7 +300,7 @@ export default function MandiLive({
           ))}
         </div>
 
-        {/* Pagination Controls */}
+        {/* Pagination */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center space-x-4">
             <label htmlFor="limit-select" className="text-sm text-gray-600">
@@ -438,29 +392,21 @@ export default function MandiLive({
             <table className="min-w-full border-collapse">
               <thead>
                 <tr className="bg-green-600 text-white">
-                  {(
-                    [
-                      { key: "commodity", label: t("tableHeaders.commodity") },
-                      { key: "variety", label: t("tableHeaders.variety") },
-                      { key: "grade", label: t("tableHeaders.grade") },
-                      { key: "modal_price", label: t("tableHeaders.price") },
-                      { key: "market", label: t("tableHeaders.market") },
-                      { key: "district", label: t("tableHeaders.district") },
-                      { key: "state", label: t("tableHeaders.state") },
-                    ] as { key: string; label: string }[]
-                  ).map(({ key, label }) => (
+                  {[
+                    { key: "commodity", label: t("tableHeaders.commodity") },
+                    { key: "variety", label: t("tableHeaders.variety") },
+                    { key: "grade", label: t("tableHeaders.grade") },
+                    { key: "modal_price", label: t("tableHeaders.price") },
+                    { key: "market", label: t("tableHeaders.market") },
+                    { key: "district", label: t("tableHeaders.district") },
+                    { key: "state", label: t("tableHeaders.state") },
+                  ].map(({ key, label }) => (
                     <th
                       key={key}
                       className="p-3 text-left text-sm font-medium cursor-pointer hover:bg-green-700 select-none"
                       onClick={() => requestSort(key)}
                       scope="col"
                       tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          requestSort(key);
-                        }
-                      }}
                       aria-sort={
                         sortConfig?.key === key
                           ? sortConfig.direction === "ascending"
@@ -471,13 +417,11 @@ export default function MandiLive({
                       aria-label={`${label} column, sortable`}
                     >
                       {label}{" "}
-                      {sortConfig?.key === key ? (
-                        sortConfig.direction === "ascending" ? (
-                          <span aria-hidden="true">↑</span>
-                        ) : (
-                          <span aria-hidden="true">↓</span>
-                        )
-                      ) : null}
+                      {sortConfig?.key === key
+                        ? sortConfig.direction === "ascending"
+                          ? "↑"
+                          : "↓"
+                        : null}
                     </th>
                   ))}
                   <th className="p-3 text-left text-sm font-medium">
